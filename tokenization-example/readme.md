@@ -29,6 +29,8 @@ Requirements to run this example server are:
 * Put your server key in the server key section in `app.py`
 * Run the server `$ python app.py`
 
+The server will run on port 5000 by default. You can configure this in `app.py` in the `APPLICATION_PORT` variable.
+
 ## Usage with SDK
 
 Put the merchant URL in the SDK init pointing to where you host this server and the SDK will function accordingly

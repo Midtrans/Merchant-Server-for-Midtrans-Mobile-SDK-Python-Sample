@@ -3,8 +3,14 @@ import base64
 
 from flask import Flask
 from flask import request
-
+"""
+This variable defines which port the test app is running at
+"""
 APPLICATION_PORT = 5000
+"""
+This defines which Midtrans API environment to target.
+Set to `True` for production or `False` for Sandbox.
+"""
 IS_PRODUCTION = False
 
 """
