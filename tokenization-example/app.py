@@ -54,7 +54,7 @@ def prepare_headers(existing_headers, json=True):
 app = Flask(__name__)
 
 
-@app.route("/pay/account", methods=["POST"])
+@app.route("/v2/pay/account", methods=["POST"])
 def link_account():
     body = request.json
     headers = prepare_headers(dict(request.headers))
@@ -66,7 +66,7 @@ def link_account():
     return response, response.status_code
 
 
-@app.route("/pay/account/<account_id>", methods=["GET"])
+@app.route("/v2/pay/account/<account_id>", methods=["GET"])
 def enquire_account(account_id):
     headers = prepare_headers(dict(request.headers), json=False)
     endpoint = partner_endpoint["enquire_account"].format(account_id)
@@ -78,7 +78,7 @@ def enquire_account(account_id):
     return response.json(), response.status_code
 
 
-@app.route("/charge", methods=["POST"])
+@app.route("/v2/charge", methods=["POST"])
 def create_transaction():
     body = request.json
     headers = prepare_headers(dict(request.headers))
@@ -90,7 +90,7 @@ def create_transaction():
     return response.json(), response.status_code
 
 
-@app.route("/pay/account/<account_id>/unbind", methods=["POST"])
+@app.route("/v2/pay/account/<account_id>/unbind", methods=["POST"])
 def unlink_account(account_id):
     body = request.json
     headers = prepare_headers(dict(request.headers))
