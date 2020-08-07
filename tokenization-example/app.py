@@ -3,6 +3,7 @@ import base64
 
 from flask import Flask
 from flask import request
+from flask import make_response
 """
 This variable defines which port the test app is running at
 """
@@ -22,8 +23,8 @@ server_key = {
 }
 
 host_url = {
-    "sandbox": "https://app.sandbox.midtrans.com/v2",
-    "production": "https://app.sandbox.midtrans.com/v2"
+    "sandbox": "https://api.sandbox.midtrans.com/v2",
+    "production": "https://api.midtrans.com/v2"
 }
 
 partner_endpoint = {
@@ -43,13 +44,17 @@ def generate_auth_header_value():
     return "Basic {}".format(key.decode("ascii"))
 
 
-def prepare_headers(existing_headers, json=True):
+def prepare_headers(json=True):
+    header = {}
     if json:
-        existing_headers["Content-Type"] = "application/json"
-    existing_headers["Accept"] = "application/json"
-    existing_headers["Authorization"] = generate_auth_header_value()
-    return existing_headers
+        header["Content-Type"] = "application/json"
+    header["Accept"] = "application/json"
+    header["Authorization"] = generate_auth_header_value()
+    return header
 
+def prepare_response(api_response):
+    response = make_response(api_response.text, api_response.status_code, dict(api_response.headers))
+    return response
 
 app = Flask(__name__)
 
@@ -57,51 +62,50 @@ app = Flask(__name__)
 @app.route("/v2/pay/account", methods=["POST"])
 def link_account():
     body = request.json
-    headers = prepare_headers(dict(request.headers))
+    headers = prepare_headers()
     url = "{}{}".format(
         host_url[get_environment()],
         partner_endpoint["account_linking"]
     )
-    response = requests.post(url=url, headers=headers, data=body)
-    return response, response.status_code, response.headers
+    api_response = requests.post(url, headers=headers, data=body)
+    return prepare_response(api_response)
 
 
 @app.route("/v2/pay/account/<account_id>", methods=["GET"])
 def enquire_account(account_id):
-    headers = prepare_headers(dict(request.headers), json=False)
+    headers = prepare_headers(json=False)
     endpoint = partner_endpoint["enquire_account"].format(account_id)
     url = "{}{}".format(
         host_url[get_environment()],
         endpoint
     )
-    response = requests.get(url=url, headers=headers)
-    return response.json(), response.status_code, response.headers
+    api_response = requests.get(url, headers=headers)
+    return prepare_response(api_response)
 
 
 @app.route("/v2/charge", methods=["POST"])
 def create_transaction():
     body = request.json
-    headers = prepare_headers(dict(request.headers))
+    headers = prepare_headers()
     url = "{}{}".format(
         host_url[get_environment()],
         partner_endpoint["create_transaction"]
     )
-    response = requests.post(url=url, headers=headers, data=body)
-    return response.json(), response.status_code, response.headers
+    api_response = requests.post(url, headers=headers, data=body)
+    return prepare_response(api_response)
 
 
 @app.route("/v2/pay/account/<account_id>/unbind", methods=["POST"])
 def unlink_account(account_id):
     body = request.json
-    headers = prepare_headers(dict(request.headers))
+    headers = prepare_headers()
     endpoint = partner_endpoint["unlink_account"].format(account_id)
     url = "{}{}".format(
         host_url[get_environment()],
         endpoint
     )
-    response = requests.post(url=url, headers=headers, data=body)
-    return response.json(), response.status_code, response.headers
-
+    response = requests.post(url, headers=headers, data=body)
+    return prepare_response(response)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=APPLICATION_PORT)
