@@ -90,6 +90,9 @@ You can also import that curl command to Postman.
 ## Notes
 This is just for very basic implementation reference, in production, you should implement your backend more securely.
 
+## Gopay Tokenization Merchant Server
+For sample reference please refer to [this example](https://github.com/Midtrans/Merchant-Server-for-Midtrans-Mobile-SDK-Python-Sample/tree/master/tokenization-example) as it has a different specification.
+
 ### Get help
 * [Midtrans&nbsp;](https://www.midtrans.com)
 * [Midtrans registration](https://dashboard.midtrans.com/register)
