@@ -66,7 +66,7 @@ def link_account():
         partner_endpoint["account_linking"]
     )
     api_response = requests.post(url, headers=headers, data=json.dumps(body))
-    return api_response.json(), api_response.status_code
+    return api_response.json(), api_response.json().get("status_code")
 
 
 @app.route("/v2/pay/account/<account_id>", methods=["GET"])
@@ -78,7 +78,7 @@ def enquire_account(account_id):
         endpoint
     )
     api_response = requests.get(url, headers=headers)
-    return api_response.json(), api_response.status_code
+    return api_response.json(), api_response.json().get("status_code")
 
 
 @app.route("/v2/charge", methods=["POST"])
@@ -90,7 +90,7 @@ def create_transaction():
         partner_endpoint["create_transaction"]
     )
     api_response = requests.post(url, headers=headers, data=body)
-    return api_response.json(), api_response.status_code
+    return api_response.json(), api_response.json().get("status_code")
 
 
 @app.route("/v2/pay/account/<account_id>/unbind", methods=["POST"])
@@ -103,7 +103,7 @@ def unlink_account(account_id):
         endpoint
     )
     api_response = requests.post(url, headers=headers, data=body)
-    return api_response.json(), api_response.status_code
+    return api_response.json(), api_response.json().get("status_code")
 
 
 if __name__ == "__main__":
