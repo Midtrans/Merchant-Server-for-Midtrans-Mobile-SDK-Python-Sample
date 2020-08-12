@@ -1,9 +1,10 @@
-import requests
 import base64
+import json
 
+import requests
 from flask import Flask
 from flask import request
-from flask import make_response
+
 """
 This variable defines which port the test app is running at
 """
@@ -52,9 +53,6 @@ def prepare_headers(json=True):
     header["Authorization"] = generate_auth_header_value()
     return header
 
-def prepare_response(api_response):
-    response = make_response(api_response.text, api_response.status_code, dict(api_response.headers))
-    return response
 
 app = Flask(__name__)
 
@@ -67,8 +65,8 @@ def link_account():
         host_url[get_environment()],
         partner_endpoint["account_linking"]
     )
-    api_response = requests.post(url, headers=headers, data=body)
-    return prepare_response(api_response)
+    api_response = requests.post(url, headers=headers, data=json.dumps(body))
+    return api_response.json(), api_response.status_code
 
 
 @app.route("/v2/pay/account/<account_id>", methods=["GET"])
@@ -80,7 +78,7 @@ def enquire_account(account_id):
         endpoint
     )
     api_response = requests.get(url, headers=headers)
-    return prepare_response(api_response)
+    return api_response.json(), api_response.status_code
 
 
 @app.route("/v2/charge", methods=["POST"])
@@ -92,7 +90,7 @@ def create_transaction():
         partner_endpoint["create_transaction"]
     )
     api_response = requests.post(url, headers=headers, data=body)
-    return prepare_response(api_response)
+    return api_response.json(), api_response.status_code
 
 
 @app.route("/v2/pay/account/<account_id>/unbind", methods=["POST"])
@@ -104,8 +102,9 @@ def unlink_account(account_id):
         host_url[get_environment()],
         endpoint
     )
-    response = requests.post(url, headers=headers, data=body)
-    return prepare_response(response)
+    api_response = requests.post(url, headers=headers, data=body)
+    return api_response.json(), api_response.status_code
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=APPLICATION_PORT)
