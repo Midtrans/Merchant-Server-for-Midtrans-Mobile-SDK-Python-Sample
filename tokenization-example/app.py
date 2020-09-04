@@ -89,21 +89,22 @@ def create_transaction():
         host_url[get_environment()],
         partner_endpoint["create_transaction"]
     )
-    api_response = requests.post(url, headers=headers, data=body)
+    if "idempotency-key" in request.headers:
+        headers["Idempotency-Key"] = request.headers.get("Idempotency-Key")
+    api_response = requests.post(url, headers=headers, data=json.dumps(body))
     return api_response.json(), api_response.json().get("status_code")
 
 
 @app.route("/v2/pay/account/<account_id>/unbind", methods=["POST"])
 def unlink_account(account_id):
-    body = request.json
     headers = prepare_headers()
     endpoint = partner_endpoint["unlink_account"].format(account_id)
     url = "{}{}".format(
         host_url[get_environment()],
         endpoint
     )
-    api_response = requests.post(url, headers=headers, data=body)
-    return api_response.json(), api_response.json().get("status_code")
+    api_response = requests.post(url, headers=headers)
+    return api_response.json()
 
 
 if __name__ == "__main__":
